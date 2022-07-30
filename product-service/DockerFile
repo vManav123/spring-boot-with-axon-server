@@ -1,0 +1,23 @@
+
+ARG work_dir=/new \
+    folder_name=security \
+    folder_location=security \
+    git_url=https://github.com/Amol1419/Docker.git
+
+
+
+FROM python:3-alpine
+
+WORKDIR ${work_dir}
+
+ADD ${folder_name} ${folder_location}
+
+RUN apk add --no-cache git && pip3 install gitdb2==3.0.0 trufflehog
+
+RUN trufflehog --regex --entropy=False --rules ${folder_name}/regexes.json ${git_url}
+
+USER truffleHog
+
+ENTRYPOINT [ "trufflehog" ]
+
+CMD [ "-h" ]
